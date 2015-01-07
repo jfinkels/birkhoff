@@ -4,6 +4,9 @@ This package contains a Python 3 implementation of Birkhoff's algorithm for
 decomposing a doubly stochastic matrix into a convex combination of permutation
 matrices.
 
+For more information, see `the full documentation
+<http://birkhoff.readthedocs.org>`_.
+
 This file was last updated on January 7, 2015.
 
 ## Copyright license ##
