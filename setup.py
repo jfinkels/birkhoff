@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # Birkhoff.  If not, see <http://www.gnu.org/licenses/>.
-"""Birkhoff decomposition for doubly stochastic matrices.
+"""Birkhoff--von Neumann decomposition for doubly stochastic matrices.
 
 * `Documentation <http://birkhoff.readthedocs.org>`_
 * `Packaging <http://pypi.python.org/pypi/birkhoff>`_
@@ -33,7 +33,8 @@ setup(
     author='Jeffrey Finkelstein',
     author_email='jeffrey.finkelstein@gmail.com',
     #classifiers=[],
-    description='Birkhoff decomposition for doubly stochastic matrices',
+    description=('Birkhoff--von Neumann decomposition for doubly stochastic'
+                 ' matrices'),
     download_url='https://github.com/jfinkels/birkhoff',
     install_requires=requirements,
     include_package_data=True,
