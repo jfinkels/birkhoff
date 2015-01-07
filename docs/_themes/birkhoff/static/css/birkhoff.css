@@ -1,0 +1,33 @@
+/** Duplicates some of the styles from the basic Sphinx theme. */
+
+a.headerlink:before {
+  content: " ";
+}
+
+a.headerlink {
+    visibility: hidden;
+}
+
+h1:hover > a.headerlink,
+h2:hover > a.headerlink,
+h3:hover > a.headerlink,
+h4:hover > a.headerlink,
+h5:hover > a.headerlink,
+h6:hover > a.headerlink,
+dt:hover > a.headerlink {
+    visibility: visible;
+    text-decoration: none;
+}
+
+dl.function dd {
+  margin-left: 2em;
+}
+
+dl.function cite {
+  font-style: italic;
+}
+
+/** Adds some space before viewcode links. */
+span.viewcode-link {
+  margin-left: 10px;
+}

@@ -1,0 +1,26 @@
+{% extends "basic/layout.html" %}
+{% block doctype %}<!doctype html>{% endblock %}
+
+{# Adds Bootstrap stylesheet. #}
+{% set css_files = css_files + ['_static/css/bootstrap.min.css'] %}
+
+{# Don't show navigation links. #}
+{% block relbar1 %}{% endblock %}
+{% block relbar2 %}{% endblock %}
+
+{# Wrap content of the page in a container so Bootstrap makes it look nice. #}
+{% block content %}
+<div class="container">
+  {% block body %}{{ super() }}{% endblock %}
+  {% block birkhoff_footer %}
+  <footer>
+    <hr>
+    <p class="text-center text-muted">
+      This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+  </footer>
+  {% endblock %}
+</div>
+{% endblock %}
+
+{# Don't use the default footer; see custom footer above. #}
+{% block footer %}{% endblock %}
