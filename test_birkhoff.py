@@ -1,4 +1,4 @@
-# test_birkhoff.py - unit tests for Birkhoff decomposition
+# test_birkhoff.py - unit tests for Birkhoff--von Neumann decomposition
 #
 # Copyright 2015 Jeffrey Finkelstein.
 #
@@ -19,14 +19,23 @@
 """Unit tests for the :mod:`birkhoff` module.
 
 """
+# Imports from built-in packages.
 from __future__ import division
 
+# Imports from third-party packages.
 import numpy as np
+from nose.tools import raises
 
-from birkhoff import birkhoff_decomposition
+# Imports from this package.
+from birkhoff import birkhoff_von_neumann_decomposition
 
 
-def test_birkhoff_decomposition():
+@raises(ValueError)
+def test_non_square_matrix():
+    birkhoff_von_neumann_decomposition(np.zeros((1, 2)))
+
+
+def test_birkhoff_von_neumann_decomposition():
     D = (1 / 6) * np.array([[1, 4, 0, 1],
                             [2, 1, 3, 0],
                             [2, 1, 1, 2],
@@ -37,7 +46,18 @@ def test_birkhoff_decomposition():
     P4 = np.array([[0, 1, 0, 0], [0, 0, 1, 0], [1, 0, 0, 0], [0, 0, 0, 1]])
     expected_coefficients = [1 / 6, 1 / 6, 1 / 3, 1 / 3]
     expected_permutations = [P1, P2, P3, P4]
-    print(birkhoff_decomposition(D))
-    actual_coefficients, actual_permutations = zip(*birkhoff_decomposition(D))
+    actual = birkhoff_von_neumann_decomposition(D)
+    actual_coefficients, actual_permutations = zip(*actual)
     assert sorted(actual_coefficients) == sorted(expected_coefficients)
+    # Convert the permutation matrices into a list of lists for easy sorting.
+    def as_list(iterable_of_arrays):
+        return [array.tolist() for array in iterable_of_arrays]
+    expected_permutations = as_list(expected_permutations)
+    actual_permutations = as_list(actual_permutations)
     assert sorted(actual_permutations) == sorted(expected_permutations)
+    # Now that we know the coefficients and permutations are as we expected,
+    # let's double check that the doubly stochastic matrix is actually the sum
+    # of the scaled permutation matrices.
+    print(D)
+    print(sum(c * P for c, P in actual))
+    assert np.all(D == sum(c * P for c, P in actual))

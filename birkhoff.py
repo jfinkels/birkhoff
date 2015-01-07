@@ -1,4 +1,4 @@
-# birkhoff.py - computes Birkhoff decomposition of a doubly stochastic matrix
+# birkhoff.py - decompose a doubly stochastic matrix into permutation matrices
 #
 # Copyright 2015 Jeffrey Finkelstein.
 #
@@ -16,61 +16,86 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # Birkhoff.  If not, see <http://www.gnu.org/licenses/>.
-"""Provides a function for computing the Birkhoff decomposition of a doubly
-stochastic matrix.
+"""Provides a function for computing the Birkhoff--von Neumann decomposition of
+a doubly stochastic matrix into a convex combination of permutation matrices.
 
 """
+# Imports from built-in libraries.
+from __future__ import division
 import itertools
 
+# Imports from third-party libraries.
+from networkx import from_numpy_matrix
 import numpy as np
+
+# Imports from this package.
+#
+# TODO This matching algorithm should really be imported from
+# NetworkX. Unfortunately, the algorithm does not yet appear in NetworkX (see
+# <https://github.com/networkx/networkx/pull/1322>). Once the algorithm is
+# added to NetworkX, we should change this line to
+#
+#     from networkx.algorithms.bipartite import hopcroft_karp_matching
+#
+# and remove the module ``matching.py`` entirely.
+from matching import hopcroft_karp_matching
 
 #: The current version of this package.
 __version__ = '0.0.1-dev'
 
+#: Any number smaller than this will be rounded down to 0 when computing the
+#: difference between NumPy arrays of floats.
+TOLERANCE = np.finfo(np.float).eps * 10.
 
-def to_permutation_matrix(dimension, edges):
-    """Converts a set of edges into a permutation matrix.
+
+def to_permutation_matrix(dimension, matches):
+    """Converts a permutation into a permutation matrix.
 
     `dimension` is the size of the permutation matrix.
 
-    Pre-condition: `edges` must be the graph of a permutation.
+    `matches` is a dictionary whose keys are vertices and whose values are
+    partners. For each vertex ``u`` and ``v``, entry (``u``, ``v``) in the
+    returned matrix will be a ``1`` if and only if ``matches[u] == v``.
+
+    Pre-condition: `matches` must be a permutation on the first `dimension`
+    natural numbers.
 
     Returns a permutation matrix as a square NumPy array.
 
     """
     P = np.zeros((dimension, dimension))
     # TODO Is there a cleverer way of doing this?
-    for (i, j) in edges:
-        P[i, j] = 1
+    for (u, v) in matches.items():
+        P[u, v] = 1
     return P
 
 
-def perfect_matching(B):
-    """Returns the set of edges representing a perfect matching in the
-    bipartite graph whose biadjacency matrix is `B`.
+def zeros(m, n):
+    """Convenience function for ``numpy.zeros((m, n))``."""
+    return np.zeros((m, n))
 
-    `B` must be a NumPy array.
 
-    This function returns a :class:`frozenset` of edges represented as pairs of
-    vertices, assuming vertices are numbered from **0** to **m - 1** on the
-    left and **0** to **n - 1** on the right, where **m** and **n** are the
-    numbers of vertices in the left and right vertex sets of the graph
-    represented by `B`, respectively.
+def hstack(left, right):
+    """Convenience function for ``numpy.hstack((left, right))``."""
+    return np.hstack((left, right))
+
+
+def vstack(top, bottom):
+    """Convenience function for ``numpy.vstack((top, bottom))``."""
+    return np.vstack((top, bottom))
+
+
+def four_blocks(topleft, topright, bottomleft, bottomright):
+    """Convenience function that creates a block matrix with the specified
+    blocks.
+
+    Each argument must be a NumPy matrix. The two top matrices must have the
+    same number of rows, as must the two bottom matrices. The two left matrices
+    must have the same number of columns, as must the two right matrices.
 
     """
-    # This is a naive algorithm that simply takes a greedy assignment.
-    matching = set()
-    matched_vertices = set()
-    (m, n) = B.shape
-    edges = zip(*B.nonzero())
-    for (i, j) in edges:
-        # If either i or j have already been matched, just continue. Otherwise,
-        # add the edge to the matching and mark its vertices as matched.
-        if i not in matched_vertices and j not in matched_vertices:
-            matching.add((i, j))
-            matched_vertices.add(i)
-            matched_vertices.add(j)
-    return frozenset(matching)
+    return vstack(hstack(topleft, topright),
+                  hstack(bottomleft, bottomright))
 
 
 def to_bipartite_matrix(A):
@@ -84,8 +109,7 @@ def to_bipartite_matrix(A):
 
     """
     m, n = A.shape
-    return np.vstack((np.hstack(np.zeros((m, m)), A),
-                      np.hstack(A.T, np.zeros((n, n)))))
+    return four_blocks(zeros(m, m), A, A.T, zeros(n, n))
 
 
 def to_pattern_matrix(D):
@@ -104,8 +128,9 @@ def to_pattern_matrix(D):
     return result
 
 
-def birkhoff_decomposition(D):
-    """Returns the Birkhoff decomposition of the doubly stochastic matrix `D`.
+def birkhoff_von_neumann_decomposition(D):
+    """Returns the Birkhoff--von Neumann decomposition of the doubly stochastic
+    matrix `D`.
 
     The input `D` must be a square NumPy array representing a doubly stochastic
     matrix (that is, a matrix whose entries are nonnegative reals and whose row
@@ -119,42 +144,56 @@ def birkhoff_decomposition(D):
     matrix. This represents the doubly stochastic matrix as a convex
     combination of the permutation matrices.
 
+    The returned list of pairs is given in the order computed by the algorithm
+    (so in particular they are not sorted in any way).
+
     """
-    (m, n) = D.shape
+    m, n = D.shape
     if m != n:
         raise ValueError('Input matrix must be square ({} x {})'.format(m, n))
     indices = list(itertools.product(range(m), range(n)))
+    # These two lists will store the result as we build it up each iteration.
     coefficients = []
     permutations = []
-    i = 0
-    while not np.all(D == 0):
-        print('iteration {}'.format(i))
-        i += 1
-        print('D matrix')
-        print(D)
+    # Create a copy of D so that we don't modify it directly.
+    S = D.copy()
+    while not np.all(S == 0):
         # Create an undirected graph whose adjacency matrix contains a 1
-        # exactly where the matrix D has a nonzero entry.
-        W = to_pattern_matrix(D)
-        print('pattern matrix')
-        print(W)
+        # exactly where the matrix S has a nonzero entry.
+        W = to_pattern_matrix(S)
+        # Construct the bipartite graph whose left and right vertices both
+        # represent the vertex set of the pattern graph (whose adjacency matrix
+        # is ``W``).
         X = to_bipartite_matrix(W)
-        print('bipartite matrix')
-        print(X)
-        # Compute a perfect matching for the graph.
-        M = perfect_matching(X)
-        print('matching:', M)
+        # Convert the matrix of a bipartite graph into a NetworkX graph object.
+        G = from_numpy_matrix(X)
+        # Compute a perfect matching for this graph. The dictionary `M` has one
+        # entry for each matched vertex (in both the left and the right vertex
+        # sets), and the corresponding value is its partner.
+        M = hopcroft_karp_matching(G)
+        # However, since we have both a left vertex set and a right vertex set,
+        # each representing the original vertex set of the pattern graph
+        # (``W``), we need to convert any vertex greater than ``n`` to its
+        # original vertex number. To do this,
+        #
+        #   - ignore any keys greater than ``n``, since they are already
+        #     covered by earlier key/value pairs,
+        #   - ensure that all values are less than ``n``.
+        #
+        M = {u: v % n for u, v in M.items() if u < n}
         # Convert that perfect matching to a permutation matrix.
         P = to_permutation_matrix(n, M)
-        print('permutation matrix')
-        print(P)
-        # Get the smallest entry of D corresponding to the 1 entries in the
+        # Get the smallest entry of S corresponding to the 1 entries in the
         # permutation matrix.
-        q = min(D[i, j] for (i, j) in indices if P[i, j] == 1)
-        print('coefficient:', q)
+        q = min(S[i, j] for (i, j) in indices if P[i, j] == 1)
         # Store the coefficient and the permutation matrix for later.
         coefficients.append(q)
         permutations.append(P)
-        # Subtract P scaled by q. After this subtraction, D has a zero entry
+        # Subtract P scaled by q. After this subtraction, S has a zero entry
         # where the value q used to live.
-        D -= q * P
+        S -= q * P
+        # PRECISION ISSUE: There seems to be a problem with floating point
+        # precision here, so we need to round down to 0 any entry that is very
+        # small.
+        S[np.abs(S) < TOLERANCE] = 0.0
     return list(zip(coefficients, permutations))
