@@ -41,7 +41,7 @@ import numpy as np
 from matching import hopcroft_karp_matching
 
 #: The current version of this package.
-__version__ = '0.0.1-dev'
+__version__ = '0.0.1'
 
 #: Any number smaller than this will be rounded down to 0 when computing the
 #: difference between NumPy arrays of floats.
