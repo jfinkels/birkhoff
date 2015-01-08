@@ -38,7 +38,7 @@ import numpy as np
 #     from networkx.algorithms.bipartite import hopcroft_karp_matching
 #
 # and remove the module ``matching.py`` entirely.
-from matching import hopcroft_karp_matching
+from .matching import hopcroft_karp_matching
 
 #: The current version of this package.
 __version__ = '0.0.3-dev'
