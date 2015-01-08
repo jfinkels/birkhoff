@@ -26,7 +26,7 @@
 from setuptools import setup
 
 #: Installation requirements.
-requirements = ['numpy']
+requirements = ['numpy', 'networkx']
 
 
 setup(
@@ -43,7 +43,7 @@ setup(
     long_description=__doc__,
     name='birkhoff',
     platforms='any',
-    #packages=['birkhoff'],
+    py_modules=['birkhoff'],
     test_suite='nose.collector',
     tests_require=['nose'],
     url='https://github.com/jfinkels/birkhoff',
