@@ -58,6 +58,4 @@ def test_birkhoff_von_neumann_decomposition():
     # Now that we know the coefficients and permutations are as we expected,
     # let's double check that the doubly stochastic matrix is actually the sum
     # of the scaled permutation matrices.
-    print(D)
-    print(sum(c * P for c, P in actual))
     assert np.all(D == sum(c * P for c, P in actual))
