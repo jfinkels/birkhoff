@@ -16,5 +16,8 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # Birkhoff.  If not, see <http://www.gnu.org/licenses/>.
-from .decompose import birkhoff_von_neumann_decomposition
 
+#: The current version of this package.
+__version__ = '0.0.3-dev'
+
+from .decompose import birkhoff_von_neumann_decomposition

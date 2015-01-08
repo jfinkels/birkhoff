@@ -61,11 +61,10 @@ import sys
 
 #: The name of the top-level Python package containing the code for this
 #: project, that is, the name of the directory containing the __init__.py file.
-#PACKAGE = 'birkhoff'
-MODULE = 'birkhoff.py'
+PACKAGE = 'birkhoff'
 
-#: The variable containing the version string in the main module.
-MODULE_VERSION_STRING = '__version__'
+#: The variable containing the version string in the __init__.py file.
+INIT_VERSION_STRING = '__version__'
 
 #: The keyword containing the version string in the setup.py file.
 SETUP_VERSION_STRING = 'version'
@@ -183,8 +182,8 @@ def git_tag(tag):
 
 def main():
     # Determine the current version and compute the next development version.
-    #init_filename = os.path.join(PACKAGE, '__init__.py')
-    version = get_version(MODULE, MODULE_VERSION_STRING)
+    init_filename = os.path.join(PACKAGE, '__init__.py')
+    version = get_version(init_filename, INIT_VERSION_STRING)
     if version.endswith('-dev'):
         version = version[:-4]
 
@@ -197,7 +196,7 @@ def main():
         fail('You have uncommitted changes in git')
 
     # Set the version string in __init__ and setup.py to be current version.
-    set_version(MODULE, version, MODULE_VERSION_STRING)
+    set_version(init_filename, version, INIT_VERSION_STRING)
     set_version('setup.py', version, SETUP_VERSION_STRING)
 
     # Commit and tag the current version in git.
@@ -210,7 +209,7 @@ def main():
     # Set the version string in __init__ and setup.py to be the next version.
     which_part = sys.argv[1] if len(sys.argv) > 1 else None
     dev_version = bump_version(version, which_part) + '-dev'
-    set_version(MODULE, dev_version, MODULE_VERSION_STRING)
+    set_version(init_filename, dev_version, INIT_VERSION_STRING)
     set_version('setup.py', dev_version, SETUP_VERSION_STRING)
     #add_new_changelog_section(version, dev_version)
     git_commit('Set development version number to {}'.format(dev_version))

@@ -40,9 +40,6 @@ import numpy as np
 # and remove the module ``matching.py`` entirely.
 from .matching import hopcroft_karp_matching
 
-#: The current version of this package.
-__version__ = '0.0.3-dev'
-
 #: Any number smaller than this will be rounded down to 0 when computing the
 #: difference between NumPy arrays of floats.
 TOLERANCE = np.finfo(np.float).eps * 10.
