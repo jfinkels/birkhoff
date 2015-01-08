@@ -18,6 +18,6 @@
 # Birkhoff.  If not, see <http://www.gnu.org/licenses/>.
 
 #: The current version of this package.
-__version__ = '0.0.3'
+__version__ = '0.0.4-dev'
 
 from .decompose import birkhoff_von_neumann_decomposition
