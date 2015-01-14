@@ -26,19 +26,8 @@ import itertools
 
 # Imports from third-party libraries.
 from networkx import from_numpy_matrix
+from networkx.algorithms.bipartite.matching import maximum_matching
 import numpy as np
-
-# Imports from this package.
-#
-# TODO This matching algorithm should really be imported from
-# NetworkX. Unfortunately, the algorithm does not yet appear in NetworkX (see
-# <https://github.com/networkx/networkx/pull/1322>). Once the algorithm is
-# added to NetworkX, we should change this line to
-#
-#     from networkx.algorithms.bipartite import hopcroft_karp_matching
-#
-# and remove the module ``matching.py`` entirely.
-from .matching import hopcroft_karp_matching
 
 #: The current version of this package.
 __version__ = '0.0.3-dev'
@@ -170,7 +159,7 @@ def birkhoff_von_neumann_decomposition(D):
         # Compute a perfect matching for this graph. The dictionary `M` has one
         # entry for each matched vertex (in both the left and the right vertex
         # sets), and the corresponding value is its partner.
-        M = hopcroft_karp_matching(G)
+        M = maximum_matching(G)
         # However, since we have both a left vertex set and a right vertex set,
         # each representing the original vertex set of the pattern graph
         # (``W``), we need to convert any vertex greater than ``n`` to its
