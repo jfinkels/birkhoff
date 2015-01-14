@@ -1,2 +1,2 @@
 -r requirements.txt
-sphinx
+sphinx>=1.3b1
