@@ -60,9 +60,12 @@ def to_permutation_matrix(matches):
     """
     n = len(matches)
     P = np.zeros((n, n))
-    # TODO Is there a cleverer way of doing this?
-    for (u, v) in matches.items():
-        P[u, v] = 1
+    # This is a cleverer way of doing
+    #
+    #     for (u, v) in matches.items():
+    #         P[u, v] = 1
+    #
+    P[list(zip(*(matches.items())))] = 1
     return P
 
 
@@ -116,11 +119,12 @@ def to_pattern_matrix(D):
 
     """
     result = np.zeros_like(D)
-    # TODO Is there a cleverer way of doing this? Something that sets all the
-    # entries at once?
-    nonzero_entries = zip(*D.nonzero())
-    for (i, j) in nonzero_entries:
-        result[i, j] = 1
+    # This is a cleverer way of doing
+    #
+    #     for (u, v) in zip(*(D.nonzero())):
+    #         result[u, v] = 1
+    #
+    result[D.nonzero()] = 1
     return result
 
 
