@@ -45,22 +45,21 @@ from .matching import hopcroft_karp_matching
 TOLERANCE = np.finfo(np.float).eps * 10.
 
 
-def to_permutation_matrix(dimension, matches):
+def to_permutation_matrix(matches):
     """Converts a permutation into a permutation matrix.
-
-    `dimension` is the size of the permutation matrix.
 
     `matches` is a dictionary whose keys are vertices and whose values are
     partners. For each vertex ``u`` and ``v``, entry (``u``, ``v``) in the
     returned matrix will be a ``1`` if and only if ``matches[u] == v``.
 
-    Pre-condition: `matches` must be a permutation on the first `dimension`
+    Pre-condition: `matches` must be a permutation on an initial subset of the
     natural numbers.
 
     Returns a permutation matrix as a square NumPy array.
 
     """
-    P = np.zeros((dimension, dimension))
+    n = len(matches)
+    P = np.zeros((n, n))
     # TODO Is there a cleverer way of doing this?
     for (u, v) in matches.items():
         P[u, v] = 1
@@ -179,7 +178,7 @@ def birkhoff_von_neumann_decomposition(D):
         #
         M = {u: v % n for u, v in M.items() if u < n}
         # Convert that perfect matching to a permutation matrix.
-        P = to_permutation_matrix(n, M)
+        P = to_permutation_matrix(M)
         # Get the smallest entry of S corresponding to the 1 entries in the
         # permutation matrix.
         q = min(S[i, j] for (i, j) in indices if P[i, j] == 1)
