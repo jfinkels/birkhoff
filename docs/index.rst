@@ -9,10 +9,11 @@ Birkhoff--von Neumann decomposition of doubly stochastic matrices
 This package provides Birkhoff's algorithm for computing the Birkhoff--von
 Neumann decomposition of a doubly stochastic matrix.
 
-`Source code (github.com) <https://github.com/jfinkels/birkhoff>`_ ·
-`Packaging (pypi.python.org) <https://pypi.python.org/pypi/birkhoff>`_ ·
-`Issues (github.com) <https://github.com/jfinkels/birkhoff/issues>`_
+`Source code`_ · `Packaging`_ · `Issues`_
 
+.. _Source code: https://github.com/jfinkels/birkhoff
+.. _Packaging: https://pypi.python.org/pypi/birkhoff
+.. _Issues: https://github.com/jfinkels/birkhoff/issues
 
 Installation
 ------------
@@ -56,12 +57,11 @@ to one. In other words, a matrix :math:`D` is doubly stochastic if
    1^T D & = 1^T
 
 A *permutation matrix* is a matrix in which each entry is either zero or one.
-By the `Birkhoff--von Neumann Theorem
-<https://en.wikipedia.org/wiki/Doubly_stochastic_matrix#Birkhoff_polytope_and_Birkhoff.E2.80.93von_Neumann_theorem>`_,
-each doubly stochastic matrix is a convex combination of permutation matrices.
-In other words, for each :math:`n \times n` doubly stochastic matrix :math:`D`,
-there is a sequence of real numbers :math:`\alpha_1, \dotsc, \alpha_N` and
-permutation matrices :math:`P_1, \dotsc, P_N` such that
+By the `Birkhoff--von Neumann Theorem`_, each doubly stochastic matrix is a
+convex combination of permutation matrices.  In other words, for each :math:`n
+\times n` doubly stochastic matrix :math:`D`, there is a sequence of real
+numbers :math:`\alpha_1, \dotsc, \alpha_N` and permutation matrices :math:`P_1,
+\dotsc, P_N` such that
 
 .. math::
 
@@ -72,6 +72,12 @@ guaranteed to be at most :math:`n^2`. Furthermore, the proof of the
 Birkhoff--von Neumann Theorem provides an explicit algorithm for computing each
 :math:`\alpha_i` and :math:`P_i`. This is the algorithm employed by
 the :func:`~birkhoff.birkhoff_von_neumann_decomposition` function.
+
+The theorem and corresponding algorithm also apply to scalar multiples of
+doubly stochastic matrices, that is, matrices of the form :math:`c D`, for some
+positive real number :math:`c`.
+
+.. _Birkhoff--von Neumann Theorem: https://en.wikipedia.org/wiki/Doubly_stochastic_matrix#Birkhoff_polytope_and_Birkhoff.E2.80.93von_Neumann_theorem
 
 Birkhoff's Algorithm
 ~~~~~~~~~~~~~~~~~~~~

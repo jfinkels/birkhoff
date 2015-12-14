@@ -121,20 +121,58 @@ def to_pattern_matrix(D):
 
 
 def birkhoff_von_neumann_decomposition(D):
-    """Returns the Birkhoff--von Neumann decomposition of the doubly stochastic
-    matrix `D`.
+    """Returns the Birkhoff--von Neumann decomposition of the doubly
+    stochastic matrix `D`.
 
-    The input `D` must be a square NumPy array representing a doubly stochastic
-    matrix (that is, a matrix whose entries are nonnegative reals and whose row
-    sums and column sums are all 1). Each doubly stochastic matrix is a convex
-    combination of at most ``n ** 2`` permutation matrices, where ``n`` is the
-    dimension of the input array.
+    The input `D` must be a square NumPy array representing a doubly
+    stochastic matrix (that is, a matrix whose entries are nonnegative
+    reals and whose row sums and column sums are all 1). Each doubly
+    stochastic matrix is a convex combination of at most ``n ** 2``
+    permutation matrices, where ``n`` is the dimension of the input
+    array.
 
     The returned value is a list of pairs whose length is at most ``n **
     2``. In each pair, the first element is a real number in the interval **(0,
     1]** and the second element is a NumPy array representing a permutation
     matrix. This represents the doubly stochastic matrix as a convex
     combination of the permutation matrices.
+
+    The input matrix may also be a scalar multiple of a doubly
+    stochastic matrix, in which case the row sums and column sums must
+    each be *c*, for some positive real number *c*. This may be useful
+    in avoiding precision issues: given a doubly stochastic matrix that
+    will have many entries close to one, multiply it by a large positive
+    integer. The returned permutation matrices will be the same
+    regardless of whether the given matrix is a doubly stochastic matrix
+    or a scalar multiple of a doubly stochastic matrix, but in the
+    latter case, the coefficients will all be scaled by the appropriate
+    scalar multiple, and their sum will be that scalar instead of one.
+
+    For example::
+
+        >>> import numpy as np
+        >>> from birkhoff import birkhoff_von_neumann_decomposition as decomp
+        >>> D = np.ones((2, 2))
+        >>> zipped_pairs = decomp(D)
+        >>> coefficients, permutations = zip(*zipped_pairs)
+        >>> coefficients
+        (1.0, 1.0)
+        >>> permutations[0]
+        array([[ 1.,  0.],
+               [ 0.,  1.]])
+        >>> permutations[1]
+        array([[ 0.,  1.],
+               [ 1.,  0.]])
+        >>> zipped_pairs = decomp(D / 2)  # halve each value in the matrix
+        >>> coefficients, permutations = zip(*zipped_pairs)
+        >>> coefficients  # will be half as large as before
+        (0.5, 0.5)
+        >>> permutations[0]  # will be the same as before
+        array([[ 1.,  0.],
+               [ 0.,  1.]])
+        >>> permutations[1]
+        array([[ 0.,  1.],
+               [ 1.,  0.]])
 
     The returned list of pairs is given in the order computed by the algorithm
     (so in particular they are not sorted in any way).
@@ -147,8 +185,10 @@ def birkhoff_von_neumann_decomposition(D):
     # These two lists will store the result as we build it up each iteration.
     coefficients = []
     permutations = []
-    # Create a copy of D so that we don't modify it directly.
-    S = D.copy()
+    # Create a copy of D so that we don't modify it directly. Cast the
+    # entries of the matrix to floating point numbers, regardless of
+    # whether they were integers.
+    S = D.astype('float')
     while not np.all(S == 0):
         # Create an undirected graph whose adjacency matrix contains a 1
         # exactly where the matrix S has a nonzero entry.
