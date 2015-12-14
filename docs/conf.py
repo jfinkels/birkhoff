@@ -293,3 +293,5 @@ intersphinx_mapping = {
 # Configuration for issuetracker extension.
 #issuetracker = 'github'
 #issuetracker_project = 'jfinkels/birkhoff'
+
+mathjax_path = 'https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
