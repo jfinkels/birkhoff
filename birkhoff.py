@@ -202,7 +202,13 @@ def birkhoff_von_neumann_decomposition(D):
         # Compute a perfect matching for this graph. The dictionary `M` has one
         # entry for each matched vertex (in both the left and the right vertex
         # sets), and the corresponding value is its partner.
-        M = maximum_matching(G)
+        #
+        # The bipartite maximum matching algorithm requires specifying
+        # the left set of nodes in the bipartite graph. By construction,
+        # the left set of nodes is {0, ..., n - 1} and the right set is
+        # {n, ..., 2n - 1}; see `to_bipartite_matrix()`.
+        left_nodes = range(n)
+        M = maximum_matching(G, left_nodes)
         # However, since we have both a left vertex set and a right vertex set,
         # each representing the original vertex set of the pattern graph
         # (``W``), we need to convert any vertex greater than ``n`` to its
