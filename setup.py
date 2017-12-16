@@ -26,7 +26,7 @@
 from setuptools import setup
 
 #: Installation requirements.
-requirements = ['numpy', 'networkx>=1.10']
+requirements = ['numpy', 'networkx>=2.0']
 
 
 setup(
