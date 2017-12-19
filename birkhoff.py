@@ -30,7 +30,7 @@ from networkx.algorithms.bipartite.matching import maximum_matching
 import numpy as np
 
 #: The current version of this package.
-__version__ = '0.0.5'
+__version__ = '0.0.6.dev0'
 
 #: Any number smaller than this will be rounded down to 0 when computing the
 #: difference between NumPy arrays of floats.

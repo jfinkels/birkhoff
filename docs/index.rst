@@ -95,8 +95,17 @@ API
 Changes
 -------
 
-0.0.5
-.....
+
+Version 0.0.6.dev0
+..................
+
+Not yet released.
+
+No changes yet.
+
+
+Version 0.0.5
+.............
 
 Released on December 19, 2017.
 
