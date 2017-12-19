@@ -90,3 +90,14 @@ API
 .. module:: birkhoff
 
 .. autofunction:: birkhoff_von_neumann_decomposition
+
+
+Changes
+-------
+
+0.0.5
+.....
+
+Released on December 19, 2017.
+
+- Updated code to work with NetworkX version 2.0 (issue #3).
