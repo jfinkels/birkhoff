@@ -47,6 +47,6 @@ setup(
     test_suite='nose.collector',
     tests_require=['nose'],
     url='https://github.com/jfinkels/birkhoff',
-    version='0.0.5',
+    version='0.0.6.dev0',
     zip_safe=False
 )
