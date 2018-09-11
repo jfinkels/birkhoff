@@ -23,7 +23,6 @@ a doubly stochastic matrix into a convex combination of permutation matrices.
 # Imports from built-in libraries.
 from __future__ import division
 import itertools
-from math import isclose
 
 # Imports from third-party libraries.
 from networkx import from_numpy_matrix
@@ -190,7 +189,7 @@ def birkhoff_von_neumann_decomposition(D):
     # entries of the matrix to floating point numbers, regardless of
     # whether they were integers.
     S = D.astype('float')
-    while not isclose(S.sum(), 0.0, abs_tol=1e-12):
+    while not np.all(S == 0):
         # Create an undirected graph whose adjacency matrix contains a 1
         # exactly where the matrix S has a nonzero entry.
         W = to_pattern_matrix(S)
