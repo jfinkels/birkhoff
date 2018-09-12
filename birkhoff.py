@@ -209,6 +209,8 @@ def birkhoff_von_neumann_decomposition(D):
         # {n, ..., 2n - 1}; see `to_bipartite_matrix()`.
         left_nodes = range(n)
         M = maximum_matching(G, left_nodes)
+        if len(M) < n * 2:
+            break
         # However, since we have both a left vertex set and a right vertex set,
         # each representing the original vertex set of the pattern graph
         # (``W``), we need to convert any vertex greater than ``n`` to its
