@@ -1,2 +1,2 @@
 numpy
-networkx>=2.0
+networkx>=3.0
